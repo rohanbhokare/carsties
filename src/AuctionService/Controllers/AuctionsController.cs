@@ -72,7 +72,7 @@ public class AuctionsController : ControllerBase
 
         if (auction == null) return NotFound();
 
-        if (auction.Seller != User.Identity.Name) return Forbid();
+        //if (auction.Seller != User.Identity.Name) return Forbid();
 
         auction.Item.Make = updateAuctionDto.Make ?? auction.Item.Make;
         auction.Item.Model = updateAuctionDto.Model ?? auction.Item.Model;
@@ -96,11 +96,11 @@ public class AuctionsController : ControllerBase
 
         if (auction == null) return NotFound();
 
-        if (auction.Seller != User.Identity.Name) return Forbid();
+        //if (auction.Seller != User.Identity.Name) return Forbid();
 
         _context.Auctions.Remove(auction);
 
-        await _publishEndpoint.Publish(_mapper.Map<AuctionDeleted>(new {Id = auction.Id.ToString()}));
+        await _publishEndpoint.Publish<AuctionDeleted>(new {Id = auction.Id.ToString()});
 
         var result = await _context.SaveChangesAsync() > 0;
 

@@ -26,13 +26,14 @@ namespace SearchService.Consumers
                         .ModifyOnly(x => new {
                             x.Color,
                             x.Make,
+                            x.Model,
                             x.Year,
                             x.Mileage
                         }, item).ExecuteAsync();
 
             if(!result.IsAcknowledged)
                 throw new MessageException(typeof(AuctionUpdated), "Problem updating mongodb");
-                
+
         }
     }
 }

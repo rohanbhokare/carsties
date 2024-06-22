@@ -8,12 +8,6 @@ namespace SearchService.Consumers
 {
     public class AuctionDeletedConsumer : IConsumer<AuctionDeleted>
     {
-        private readonly IMapper _mapper;
-        public AuctionDeletedConsumer(IMapper mapper)
-        {
-            _mapper = mapper;
-            
-        }
         public async Task Consume(ConsumeContext<AuctionDeleted> context)
         {
             Console.WriteLine("--> Consuming auction Deleted: "+context.Message.Id);

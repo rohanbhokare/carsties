@@ -14,7 +14,7 @@ builder.Services.AddDbContext<AuctionDbContext>(opt => {
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddMassTransit(x => {
     x.AddEntityFrameworkOutbox<AuctionDbContext>(o => {
-        o.QueryDelay = TimeSpan.FromSeconds(10);
+        o.QueryDelay = TimeSpan.FromSeconds(30);
         o.UsePostgres();
         o.UseBusOutbox();
     });
@@ -23,6 +23,18 @@ builder.Services.AddMassTransit(x => {
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
 
     x.UsingRabbitMq((context, cfg) => {
+
+        cfg.UseMessageRetry(r => 
+        {
+            r.Handle<RabbitMqConnectionException>();
+            r.Interval(5, TimeSpan.FromSeconds(30));
+        });
+
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host => {
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
+
         cfg.ConfigureEndpoints(context);
     });
 });
@@ -45,6 +57,12 @@ app.MapControllers();
 
 try
 {
+    string databaseCon = builder.Configuration.GetConnectionString("DefaultConnection");
+    var environment = app.Environment.EnvironmentName;
+    Console.WriteLine("\nRR " +databaseCon);
+    Console.WriteLine("\nRR " +environment);
+    Console.WriteLine("\n");
+
     DbInitializer.InitDb(app);
 }
 catch (Exception e)

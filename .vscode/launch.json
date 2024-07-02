@@ -18,7 +18,7 @@
             "type": "docker",
             "request": "launch",
             "netCore": {
-                "appProject": "${workspaceFolder}/src/AuctionService/AuctionService.csproj",
+                "appProject": "${workspaceFolder}/src/IdentityService/IdentityService.csproj",
                 "buildWithSdk": true
             }
         }
